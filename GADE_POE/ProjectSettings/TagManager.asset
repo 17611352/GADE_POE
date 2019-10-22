@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Factory Blue
+  - Factory Red
+  - Resource Blue
+  - Resource Red
+  - Game Manager
+  - Melee Unit Blue
+  - Melee Unit Red
+  - Ranged Unit Blue
+  - Ranged Unit Red
+  - Sword
+  - Sword Blue
+  - Sword Red
+  - Blue Rally Point
+  - Red Rally Point
+  - Arrow
+  - Blue Arrow
+  - Red Arrow
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - PostProcessing
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
