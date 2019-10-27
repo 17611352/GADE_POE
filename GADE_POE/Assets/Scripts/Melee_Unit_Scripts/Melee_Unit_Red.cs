@@ -90,6 +90,7 @@ public class Melee_Unit_Red : MonoBehaviour
         float nearestDist = float.MaxValue;
         GameObject[] blueEnemies = GameObject.FindGameObjectsWithTag("Melee Unit Blue");
         GameObject[] rangedBlueEnemies = GameObject.FindGameObjectsWithTag("Ranged Unit Blue");
+        GameObject[] wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
 
         if (blueEnemies != null)
         {
@@ -99,7 +100,7 @@ public class Melee_Unit_Red : MonoBehaviour
 
                 if (distanceToEnemy < nearestDist)
                 {
-                    nearestDist = Vector2.Distance(transform.position, blueGO.transform.position);
+                    nearestDist = Vector3.Distance(transform.position, blueGO.transform.position);
                     nearestObj = blueGO;
                 }
 
@@ -119,7 +120,7 @@ public class Melee_Unit_Red : MonoBehaviour
 
                 if (distanceToEnemy < nearestDist)
                 {
-                    nearestDist = Vector2.Distance(transform.position, blueGO.transform.position);
+                    nearestDist = Vector3.Distance(transform.position, blueGO.transform.position);
                     nearestObj = blueGO;
                 }
 
@@ -129,6 +130,26 @@ public class Melee_Unit_Red : MonoBehaviour
             {
                 Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
             }
+        }
+        if (wizardUnits != null)
+        {
+            foreach (GameObject wizardGO in wizardUnits)
+            {
+                float distanceToEnemy = (wizardGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, wizardGO.transform.position);
+                    nearestObj = wizardGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+
         }
 
     }
@@ -160,6 +181,16 @@ public class Melee_Unit_Red : MonoBehaviour
             health -= 20;
 
             Debug.Log("Damaged Red");
+        }
+        else if (other.gameObject.CompareTag("Blue Arrow"))
+        {
+            health -= 15;
+
+            Debug.Log("Damaged Red Melee Unit With Arrow");
+        }
+        else if (other.gameObject.CompareTag("Wizard Projectile"))
+        {
+            health -= 25;
         }
     }
 

@@ -45,69 +45,62 @@ public class Ranged_Unit_Blue : MonoBehaviour
 
         DeathCheck();
 
-        if (health < 30)
-        {
-            //RunAway();
+       
+        MoveTowardsEnemy();
 
-            //transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        if (nearestObj != null)
+        {
+            transform.LookAt(nearestObj.transform, Vector2.up);
+
+            //if (Vector2.Distance(transform.position, nearestObj.transform.position) > attackRange)
+            //{
+            //    transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            //    anim.SetBool("canAttack", false);
+            //}
+            //else if (Vector2.Distance(transform.position, nearestObj.transform.position) <= attackRange)
+            //{
+            //    anim.SetBool("canAttack", true);
+            //}
+
+            if (Vector3.Distance(nearestObj.transform.position, this.transform.position) > attackRange)
+            {
+                transform.Translate(Vector3.forward * speed * Time.deltaTime);
+                canAttack = false;
+            }
+            else if (Vector3.Distance(nearestObj.transform.position, this.transform.position) <= attackRange)
+            {
+                //Attack
+                canAttack = true;
+            }
+
+            //if (nearestObj.transform.position.x - this.transform.position.x > attackRange)
+            //{
+            //    radiusCheckContact = false;
+            //}
+            arrowCheck = 0;
         }
-        else if (health >= 30)
+        else if(nearestObj == null && canAttack == true)
         {
-            MoveTowardsEnemy();
+            currentTime = 0;
+            canFire = false;
 
-            if (nearestObj != null)
+            if (arrowCheck == 0)
             {
-                transform.LookAt(nearestObj.transform, Vector2.up);
-
-                //if (Vector2.Distance(transform.position, nearestObj.transform.position) > attackRange)
-                //{
-                //    transform.Translate(Vector3.forward * speed * Time.deltaTime);
-                //    anim.SetBool("canAttack", false);
-                //}
-                //else if (Vector2.Distance(transform.position, nearestObj.transform.position) <= attackRange)
-                //{
-                //    anim.SetBool("canAttack", true);
-                //}
-
-                if (Vector2.Distance(nearestObj.transform.position, this.transform.position) > attackRange)
-                {
-                    transform.Translate(Vector3.forward * speed * Time.deltaTime);
-                    canAttack = false;
-                }
-                else if (Vector2.Distance(nearestObj.transform.position, this.transform.position) <= attackRange)
-                {
-                    //Attack
-                    canAttack = true;
-                }
-
-                //if (nearestObj.transform.position.x - this.transform.position.x > attackRange)
-                //{
-                //    radiusCheckContact = false;
-                //}
-                arrowCheck = 0;
-            }
-            else if(nearestObj == null && canAttack == true)
-            {
-                currentTime = 0;
-                canFire = false;
-
-                if (arrowCheck == 0)
-                {
-                    SpawnArrowPrefab();
-                    arrowCheck++;
-                }
-
-            }
-
-
-            if (currentTime >= gameManager.GetComponent<Game_Engine>().arrowFireInterval)
-            {
-                currentTime = 0;
-                canFire = true;
                 SpawnArrowPrefab();
+                arrowCheck++;
             }
 
         }
+
+
+        if (currentTime >= gameManager.GetComponent<Game_Engine>().arrowFireInterval)
+        {
+            currentTime = 0;
+            canFire = true;
+            SpawnArrowPrefab();
+        }
+
+        
 
     }
 
@@ -116,6 +109,7 @@ public class Ranged_Unit_Blue : MonoBehaviour
         float nearestDist = float.MaxValue;
         GameObject[] redEnemies = GameObject.FindGameObjectsWithTag("Melee Unit Red");
         GameObject[] rangedRedEnemies = GameObject.FindGameObjectsWithTag("Ranged Unit Red");
+        GameObject[] wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
 
         if (redEnemies != null)
         {
@@ -125,7 +119,7 @@ public class Ranged_Unit_Blue : MonoBehaviour
 
                 if (distanceToEnemy < nearestDist)
                 {
-                    nearestDist = Vector2.Distance(transform.position, redGO.transform.position);
+                    nearestDist = Vector3.Distance(transform.position, redGO.transform.position);
                     nearestObj = redGO;
                 }
 
@@ -145,7 +139,7 @@ public class Ranged_Unit_Blue : MonoBehaviour
 
                 if (distanceToEnemy < nearestDist)
                 {
-                    nearestDist = Vector2.Distance(transform.position, redGO.transform.position);
+                    nearestDist = Vector3.Distance(transform.position, redGO.transform.position);
                     nearestObj = redGO;
                 }
 
@@ -155,6 +149,26 @@ public class Ranged_Unit_Blue : MonoBehaviour
             {
                 Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
             }
+        }
+        if (wizardUnits != null)
+        {
+            foreach (GameObject wizardGO in wizardUnits)
+            {
+                float distanceToEnemy = (wizardGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, wizardGO.transform.position);
+                    nearestObj = wizardGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+
         }
 
     }
@@ -196,11 +210,30 @@ public class Ranged_Unit_Blue : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Sword Red"))
         {
-            //Subtract the universal sword damage from current health
+            //Subtract the universal Sword damage from current health
             health -= 20;
 
             Debug.Log("Damaged Ranged Blue");
         }
+        else if (other.gameObject.CompareTag("Red Arrow"))
+        {
+            health -= 15;
+
+            Debug.Log("Damaged Blue Ranged Unit With Arrow");
+        }
+        else if (other.gameObject.CompareTag("Wizard Projectile"))
+        {
+            health -= 25;
+        }
+        //if(other.gameObject.CompareTag("Red Arrow"))
+        //{
+        //    //Subtract the universal Arrow damage from current health
+        //    health -= 15;
+
+        //    Destroy(other.gameObject);
+
+        //    Debug.Log("Arrow Hit Blue");
+        //}
     }
 
 }

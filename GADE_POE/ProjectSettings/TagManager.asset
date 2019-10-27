@@ -21,6 +21,8 @@ TagManager:
   - Arrow
   - Blue Arrow
   - Red Arrow
+  - Wizard Projectile
+  - Wizard Unit
   layers:
   - Default
   - TransparentFX

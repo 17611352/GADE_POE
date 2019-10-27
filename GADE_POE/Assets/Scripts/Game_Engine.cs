@@ -54,6 +54,14 @@ public class Game_Engine : MonoBehaviour
     public GameObject BlueArrowPrefab;
     public float arrowFireInterval = 3;
 
+    public GameObject wizardUnit;
+    public GameObject potionPrefab;
+    public float potionThrowInterval = 3;
+    public float wizardSpawnInterval = 14;
+    float wizardSpawnCheck = 0;
+
+    public Transform wizardSpawnPos;
+
     public List<Vector3> blueSpawnPos;
     public List<Vector3> redSpawnPos;
 
@@ -65,6 +73,8 @@ public class Game_Engine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        wizardSpawnCheck = wizardSpawnInterval;
+
         if (numOfResourceBuildingsPerTeam > 2 || numOfFactoryBuildingsPerTeam > 2)
         {
             
@@ -99,12 +109,18 @@ public class Game_Engine : MonoBehaviour
             }
         }
 
+        if(currentTime >= wizardSpawnCheck)
+        {
+            wizardSpawnCheck += wizardSpawnInterval;
+            SpawnWizardUnits();
+        }
+
     }
 
 
-    private void NumOfUnitsInGame()
+    private void SpawnWizardUnits()
     {
-
+        Instantiate(wizardUnit, wizardSpawnPos.position, Quaternion.identity);
     }
 
 

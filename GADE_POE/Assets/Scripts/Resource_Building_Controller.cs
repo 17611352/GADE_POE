@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Resource_Building_Controller : MonoBehaviour
 {
@@ -16,10 +17,13 @@ public class Resource_Building_Controller : MonoBehaviour
     float maxHealth = 300;
 
     GameObject gameManager;
+    public Image healthBar;
 
     // Start is called before the first frame update
     void Start()
     {
+        health = maxHealth;
+
         gameManager = GameObject.FindGameObjectWithTag("Game Manager");
 
         resourceGatherCheck = gameManager.GetComponent<Game_Engine>().resourceGatherSec;
@@ -29,6 +33,10 @@ public class Resource_Building_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DeathCheck();
+
+        healthBar.fillAmount = health / maxHealth;
+
         currentTime += Time.deltaTime;
 
         if(currentTime >= resourceGatherCheck)
@@ -51,5 +59,23 @@ public class Resource_Building_Controller : MonoBehaviour
         }
 
  
+    }
+
+
+    void DeathCheck()
+    {
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Wizard Projectile"))
+        {
+            health -= 5;
+        }
     }
 }

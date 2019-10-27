@@ -71,4 +71,32 @@ public class Arrow_Controller : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Melee Unit Blue"))
+        {
+            other.GetComponent<Melee_Unit_Blue>().health -= 15;
+
+            Destroy(this.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Melee Unit Red"))
+        {
+            other.GetComponent<Melee_Unit_Red>().health -= 15;
+
+            Destroy(this.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Ranged Unit Blue"))
+        {
+            other.GetComponent<Ranged_Unit_Blue>().health -= 15;
+
+            Destroy(this.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Ranged Unit Red"))
+        {
+            other.GetComponent<Ranged_Unit_Red>().health -= 15;
+
+            Destroy(this.gameObject);
+        }
+    }
+
 }

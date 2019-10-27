@@ -75,6 +75,8 @@
     <Compile Include="Assets\Scripts\Ranged_Unit_Script\Ranged_Unit_Red.cs" />
     <Compile Include="Assets\Scripts\Resource_Building_Controller.cs" />
     <Compile Include="Assets\Scripts\Unit.cs" />
+    <Compile Include="Assets\Scripts\Wizard_Unit_Scripts\Wizard_Projectile.cs" />
+    <Compile Include="Assets\Scripts\Wizard_Unit_Scripts\Wizard_Unit_Controller.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/jaden/repos/GADE_POE/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

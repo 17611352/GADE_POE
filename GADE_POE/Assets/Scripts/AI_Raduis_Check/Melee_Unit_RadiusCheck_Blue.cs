@@ -17,6 +17,10 @@ public class Melee_Unit_RadiusCheck_Blue : MonoBehaviour
         {
             thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = true;
         }
+        else if (other.CompareTag("Wizard Unit"))
+        {
+            thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = true;
+        }
 
     }
 
@@ -30,6 +34,10 @@ public class Melee_Unit_RadiusCheck_Blue : MonoBehaviour
         {
             thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = true;
         }
+        else if (other.CompareTag("Wizard Unit"))
+        {
+            thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = true;
+        }
 
     }
 
@@ -40,6 +48,10 @@ public class Melee_Unit_RadiusCheck_Blue : MonoBehaviour
             thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = false;
         }
         else if (other.CompareTag("Ranged Unit Red"))
+        {
+            thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = false;
+        }
+        else if (other.CompareTag("Wizard Unit"))
         {
             thisUnit.GetComponent<Melee_Unit_Blue>().radiusCheckContact = false;
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Factory_Building_Controller : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Factory_Building_Controller : MonoBehaviour
     float maxHealth = 500;
 
     public GameObject gameManager;
+    public Image healthBar;
 
     int r;
 
@@ -33,6 +35,10 @@ public class Factory_Building_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DeathCheck();
+
+        healthBar.fillAmount = health / maxHealth;
+
         if (team == "Blue Team")
         {
             totalNumOfResource = gameManager.GetComponent<Game_Engine>().numOfBlueResourceTotal;
@@ -138,8 +144,24 @@ public class Factory_Building_Controller : MonoBehaviour
                 }
             }
 
+        }
+    }
 
 
+    void DeathCheck()
+    {
+        if(health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Wizard Projectile"))
+        {
+            health -= 5;
         }
     }
 }
