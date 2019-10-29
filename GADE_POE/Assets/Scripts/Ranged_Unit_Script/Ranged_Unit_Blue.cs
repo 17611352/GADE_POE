@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Ranged_Unit_Blue : MonoBehaviour
 {
     GameObject gameManager;
     public GameObject nearestObj;
+
+    public Image healthBar;
 
     public GameObject arrowSpawnPos;
 
@@ -45,8 +48,24 @@ public class Ranged_Unit_Blue : MonoBehaviour
 
         DeathCheck();
 
-       
-        MoveTowardsEnemy();
+        healthBar.fillAmount = health / maxHealth;
+
+        if (gameManager.GetComponent<Game_Engine>().blueBuildingUnderAttack == true && gameManager.GetComponent<Game_Engine>().wizardUnits != null)
+        {
+            FindAndKillPriorityTarget();
+        }
+        if (gameManager.GetComponent<Game_Engine>().blueBuildingUnderAttack == true && gameManager.GetComponent<Game_Engine>().wizardUnits == null)
+        {
+            MoveTowardsEnemy();
+        }
+        else if (gameManager.GetComponent<Game_Engine>().blueBuildingUnderAttack == false)
+        {
+            MoveTowardsEnemy();
+        }
+        //else
+        //{
+        //    MoveTowardsEnemy();
+        //}
 
         if (nearestObj != null)
         {
@@ -99,10 +118,36 @@ public class Ranged_Unit_Blue : MonoBehaviour
             canFire = true;
             SpawnArrowPrefab();
         }
-
-        
-
     }
+
+
+    void FindAndKillPriorityTarget()
+    {
+        float nearestDist = float.MaxValue;
+        GameObject[] wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
+
+        if (wizardUnits != null)
+        {
+            foreach (GameObject wizardGO in wizardUnits)
+            {
+                float distanceToEnemy = (wizardGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, wizardGO.transform.position);
+                    nearestObj = wizardGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+
+        }
+    }
+
 
     void MoveTowardsEnemy()
     {
@@ -214,12 +259,22 @@ public class Ranged_Unit_Blue : MonoBehaviour
             health -= 20;
 
             Debug.Log("Damaged Ranged Blue");
+
+            if (health <= 0 && this.gameObject != null)
+            {
+                gameManager.GetComponent<Game_Engine>().currentRedTeamScore++;
+            }
         }
         else if (other.gameObject.CompareTag("Red Arrow"))
         {
             health -= 15;
 
             Debug.Log("Damaged Blue Ranged Unit With Arrow");
+
+            if (health <= 0 && this.gameObject != null)
+            {
+                gameManager.GetComponent<Game_Engine>().currentRedTeamScore++;
+            }
         }
         else if (other.gameObject.CompareTag("Wizard Projectile"))
         {

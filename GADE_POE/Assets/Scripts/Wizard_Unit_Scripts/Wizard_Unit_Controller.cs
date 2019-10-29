@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Wizard_Unit_Controller : MonoBehaviour
 {
     GameObject gameManager;
     public GameObject nearestObj;
+
+    public Image healthBar;
 
     public GameObject potionSpawnPos;
     public GameObject fallBackPos;
@@ -14,7 +17,7 @@ public class Wizard_Unit_Controller : MonoBehaviour
     public float health;
     int maxHealth = 50;
     float attack = 25;
-    float attackRange = 4f;
+    float attackRange = 3.5f;
     public float distance = 0;
 
     float potionFireInterval = 2;
@@ -43,7 +46,8 @@ public class Wizard_Unit_Controller : MonoBehaviour
 
         DeathCheck();
 
- 
+        healthBar.fillAmount = health / maxHealth;
+
         MoveTowardsEnemy();
 
         if (nearestObj != null)
@@ -71,13 +75,19 @@ public class Wizard_Unit_Controller : MonoBehaviour
                 canAttack = true;
             }
 
-            if(distance < 3.5 && canAttack == true)
+            if(distance < 2.5f && canAttack == true)
             {
                 //I used this bool as a way to check which impulse force to use according to the givan specifications
                 impulseCategoryCheck = true;
             }
-            else if(distance >= 3.5 && canAttack == true)
+            if(distance >= 3.5f && canAttack == true)
             {
+                //I used this bool as a way to check which impulse force to use according to the givan specifications
+                impulseCategoryCheck = false;
+            }
+            else if(distance >= 2.5f && distance <3.5f && canAttack == true)
+            {
+                //I used this bool as a way to check which impulse force to use according to the givan specifications
                 impulseCategoryCheck = false;
             }
 
@@ -107,8 +117,88 @@ public class Wizard_Unit_Controller : MonoBehaviour
         float nearestDist = float.MaxValue;
         GameObject[] redEnemies = GameObject.FindGameObjectsWithTag("Melee Unit Red");
         GameObject[] rangedRedEnemies = GameObject.FindGameObjectsWithTag("Ranged Unit Red");
-        //GameObject[] wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
 
+        GameObject[] blueFactoryBuildings = GameObject.FindGameObjectsWithTag("Factory Blue");
+        GameObject[] redFactoryBuildings = GameObject.FindGameObjectsWithTag("Factory Red");
+        GameObject[] blueResourceBuildings = GameObject.FindGameObjectsWithTag("Resource Blue");
+        GameObject[] redResourceBuildings = GameObject.FindGameObjectsWithTag("Resource Red");
+
+        if(blueFactoryBuildings != null)
+        {
+            foreach (GameObject blueGO in blueFactoryBuildings)
+            {
+                float distanceToEnemy = (blueGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, blueGO.transform.position);
+                    nearestObj = blueGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+        }
+        if(blueResourceBuildings != null)
+        {
+            foreach (GameObject blueGO in blueResourceBuildings)
+            {
+                float distanceToEnemy = (blueGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, blueGO.transform.position);
+                    nearestObj = blueGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+        }
+        if(redFactoryBuildings != null)
+        {
+            foreach (GameObject redGO in redFactoryBuildings)
+            {
+                float distanceToEnemy = (redGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, redGO.transform.position);
+                    nearestObj = redGO;
+                }
+
+            } 
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+        }
+        if(redResourceBuildings != null)
+        {
+            foreach (GameObject redGO in redResourceBuildings)
+            {
+                float distanceToEnemy = (redGO.transform.position - this.transform.position).sqrMagnitude;
+
+                if (distanceToEnemy < nearestDist)
+                {
+                    nearestDist = Vector3.Distance(transform.position, redGO.transform.position);
+                    nearestObj = redGO;
+                }
+
+            }
+
+            if (nearestObj != null)
+            {
+                Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
+            }
+        }
         if (redEnemies != null)
         {
             foreach (GameObject redGO in redEnemies)
@@ -148,26 +238,6 @@ public class Wizard_Unit_Controller : MonoBehaviour
                 Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
             }
         }
-        //if (wizardUnits != null)
-        //{
-        //    foreach (GameObject wizardGO in wizardUnits)
-        //    {
-        //        float distanceToEnemy = (wizardGO.transform.position - this.transform.position).sqrMagnitude;
-
-        //        if (distanceToEnemy < nearestDist)
-        //        {
-        //            nearestDist = Vector2.Distance(transform.position, wizardGO.transform.position);
-        //            nearestObj = wizardGO;
-        //        }
-
-        //    }
-
-        //    if (nearestObj != null)
-        //    {
-        //        Debug.DrawLine(transform.position, nearestObj.transform.position, Color.red);
-        //    }
-
-        //}
 
     }
 
@@ -178,11 +248,8 @@ public class Wizard_Unit_Controller : MonoBehaviour
         {
             GameObject potion = gameManager.GetComponent<Game_Engine>().potionPrefab;
 
-            Quaternion q = new Quaternion(0, 0, 0, 0);
-            Quaternion rot = new Quaternion(potionSpawnPos.transform.rotation.x - 0.7f, potionSpawnPos.transform.rotation.y, potionSpawnPos.transform.rotation.z, potionSpawnPos.transform.rotation.w);
-
-            potion.GetComponent<Wizard_Projectile>().impulseForce = 5;
-            Instantiate(potion, potionSpawnPos.transform.position, rot);
+            potion.GetComponent<Wizard_Projectile>().impulseForce = 4;
+            Instantiate(potion, potionSpawnPos.transform.position, potionSpawnPos.transform.rotation);
 
 
         }
@@ -190,11 +257,8 @@ public class Wizard_Unit_Controller : MonoBehaviour
         {
             GameObject potion = gameManager.GetComponent<Game_Engine>().potionPrefab;
 
-            Quaternion q = new Quaternion(0, 0, 0, 0);
-            Quaternion rot = new Quaternion(potionSpawnPos.transform.rotation.x - 0.7f, potionSpawnPos.transform.rotation.y, potionSpawnPos.transform.rotation.z, potionSpawnPos.transform.rotation.w);
-
             potion.GetComponent<Wizard_Projectile>().impulseForce = 2;
-            Instantiate(potion, potionSpawnPos.transform.position, rot);
+            Instantiate(potion, potionSpawnPos.transform.position, potionSpawnPos.transform.rotation);
 
         }
 

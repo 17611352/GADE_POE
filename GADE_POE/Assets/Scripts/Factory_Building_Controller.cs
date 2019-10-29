@@ -8,7 +8,11 @@ public class Factory_Building_Controller : MonoBehaviour
     public string team;
     public int totalNumOfResource;
     public float health = 0;
-    float maxHealth = 500;
+    float maxHealth = 1000;
+
+    float currentTime = 0;
+    float timeCheck = 0;
+    public float tempHealth = 0;
 
     public GameObject gameManager;
     public Image healthBar;
@@ -19,6 +23,7 @@ public class Factory_Building_Controller : MonoBehaviour
     void Start()
     {
         health = maxHealth;
+        tempHealth = health;
 
         gameManager = GameObject.FindGameObjectWithTag("Game Manager");
 
@@ -35,6 +40,8 @@ public class Factory_Building_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        currentTime += Time.deltaTime;
+
         DeathCheck();
 
         healthBar.fillAmount = health / maxHealth;
@@ -48,8 +55,39 @@ public class Factory_Building_Controller : MonoBehaviour
             totalNumOfResource = gameManager.GetComponent<Game_Engine>().numOfRedResourceTotal;
         }
 
+        //The if statements below will trigger the underattack bool in the Game Engine
 
+        if(team == "Blue Team")
+        {
+            if (health < tempHealth)
+            {
+                gameManager.GetComponent<Game_Engine>().blueBuildingUnderAttack = true;
+            }
+        }
+        
+        if(team == "Red Team")
+        {
+            if (health < tempHealth)
+            {
+                gameManager.GetComponent<Game_Engine>().redBuildingUnderAttack = true;
+            }
+        }
+       
 
+        if (currentTime >= timeCheck)
+        {
+            timeCheck += 5;
+            tempHealth = health;
+
+            if(team == "Blue Team")
+            {
+                gameManager.GetComponent<Game_Engine>().blueBuildingUnderAttack = false;
+            }
+            if(team == "Red Team")
+            {
+                gameManager.GetComponent<Game_Engine>().redBuildingUnderAttack = false;
+            }
+        }
         //foreach(GameObject gO in gameManager.GetComponent<Game_Engine>().Building)
         //{
         //    if(gO.tag == "Resource Blue" && team == "Blue Team")

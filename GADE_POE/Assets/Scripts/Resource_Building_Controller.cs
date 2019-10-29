@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Resource_Building_Controller : MonoBehaviour
 {
@@ -44,10 +45,6 @@ public class Resource_Building_Controller : MonoBehaviour
             currentNumOfResource += resourcePerInterval;
             currentTime = 0;
 
-            if (gameObject.tag == "Resource Blue")
-            {
-
-            }
             //if (gameObject.tag == "Resource Blue")
             //{
             //    gameManager.GetComponent<Game_Engine>().blueResourceCount1 = currentNumOfResource;

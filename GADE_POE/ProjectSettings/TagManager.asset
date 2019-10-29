@@ -23,6 +23,9 @@ TagManager:
   - Red Arrow
   - Wizard Projectile
   - Wizard Unit
+  - UI Manager
+  - Blue Team Progress Bar
+  - Red Team Progress Bar
   layers:
   - Default
   - TransparentFX

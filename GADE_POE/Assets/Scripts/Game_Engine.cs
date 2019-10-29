@@ -1,12 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Game_Engine : MonoBehaviour
 {
-   //public List<GameObject> units;
-    public List<GameObject> blueUnit;
-    public List<GameObject> redUnit;
+    public bool startGame = false;
+    public bool endGame = false;
+    public bool mainMenu = false;
+    public float endScore = 0;
+
+    public string victorTeam;
+    public TextMeshProUGUI victoryTextBox;
+
+    public float currentBlueTeamScore = 0;
+    public float currentRedTeamScore = 0;
+
+
+    //public List<GameObject> units;
+    public GameObject[] blueRallyPoints;
+    public GameObject[] redRallyPoints;
+    public GameObject[] meleeBlueUnit;
+    public GameObject[] rangedBlueUnit;
+    public GameObject[] meleeRedUnit;
+    public GameObject[] rangedRedUnit;
+    public GameObject[] wizardUnits;
+    public GameObject[] tempFactoryBluebuildings;
+    public GameObject[] tempFactoryRedbuildings;
+    public GameObject[] tempResourceBluebuildings;
+    public GameObject[] tempResourceRedbuildings;
     public List<GameObject> buildings;
 
     //public List<GameObject> Unit
@@ -24,6 +47,9 @@ public class Game_Engine : MonoBehaviour
 
     public int numOfFactoryBuildingsPerTeam;
     public int numOfResourceBuildingsPerTeam;
+
+    public bool blueBuildingUnderAttack = false;
+    public bool redBuildingUnderAttack = false;
 
     public GameObject factoryBuildingRed;
     public GameObject factoryBuildingBlue;
@@ -60,7 +86,7 @@ public class Game_Engine : MonoBehaviour
     public float wizardSpawnInterval = 14;
     float wizardSpawnCheck = 0;
 
-    public Transform wizardSpawnPos;
+    public Transform[] wizardSpawnPos;
 
     public List<Vector3> blueSpawnPos;
     public List<Vector3> redSpawnPos;
@@ -73,11 +99,24 @@ public class Game_Engine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        endScore = 100;
         wizardSpawnCheck = wizardSpawnInterval;
+        startGame = false;
+        mainMenu = true;
+    }
+
+    public void StartGame()
+    {
+        endScore = 100;
+        wizardSpawnCheck = wizardSpawnInterval;
+        currentTime = 0;
+        nextWave = 0;
+        startGame = true;
+        mainMenu = false;
 
         if (numOfResourceBuildingsPerTeam > 2 || numOfFactoryBuildingsPerTeam > 2)
         {
-            
+
         }
         else
         {
@@ -87,40 +126,171 @@ public class Game_Engine : MonoBehaviour
         AssignResourceBuildingInstance();
     }
 
+
+    public void MainMenu()
+    {
+        mainMenu = true;
+        startGame = false;
+        endGame = false;
+
+        currentBlueTeamScore = 0;
+        currentRedTeamScore = 0;
+
+        DestroyAllUnits();
+    }
+
+
+    void DestroyAllUnits()
+    {
+        tempFactoryBluebuildings = GameObject.FindGameObjectsWithTag("Factory Blue");
+        tempFactoryRedbuildings = GameObject.FindGameObjectsWithTag("Factory Red");
+        tempResourceBluebuildings = GameObject.FindGameObjectsWithTag("Resource Blue");
+        tempResourceRedbuildings = GameObject.FindGameObjectsWithTag("Resource Red");
+
+        blueRallyPoints = GameObject.FindGameObjectsWithTag("Blue Rally Point");
+        redRallyPoints = GameObject.FindGameObjectsWithTag("Red Rally Point");
+
+        meleeBlueUnit = GameObject.FindGameObjectsWithTag("Melee Unit Blue");
+        rangedBlueUnit = GameObject.FindGameObjectsWithTag("Ranged Unit Blue");
+
+        meleeRedUnit = GameObject.FindGameObjectsWithTag("Melee Unit Red");
+        rangedRedUnit = GameObject.FindGameObjectsWithTag("Ranged Unit Red");
+
+        wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
+
+        for(int i = 0; i < tempFactoryBluebuildings.Length; i++)
+        {
+            Destroy(tempFactoryBluebuildings[i]);
+        }
+
+        for (int i = 0; i < tempFactoryRedbuildings.Length; i++)
+        {
+            Destroy(tempFactoryRedbuildings[i]);
+        }
+
+        for (int i = 0; i < tempResourceBluebuildings.Length; i++)
+        {
+            Destroy(tempResourceBluebuildings[i]);
+        }
+
+        for (int i = 0; i < tempResourceRedbuildings.Length; i++)
+        {
+            Destroy(tempResourceRedbuildings[i]);
+        }
+
+        for (int i = 0; i < meleeBlueUnit.Length; i++)
+        {
+            Destroy(meleeBlueUnit[i]);
+        }
+
+        for (int i = 0; i < meleeRedUnit.Length; i++)
+        {
+            Destroy(meleeRedUnit[i]);
+        }
+
+        for (int i = 0; i < rangedBlueUnit.Length; i++)
+        {
+            Destroy(rangedBlueUnit[i]);
+        }
+
+        for (int i = 0; i < rangedRedUnit.Length; i++)
+        {
+            Destroy(rangedRedUnit[i]);
+        }
+
+        for (int i = 0; i < wizardUnits.Length; i++)
+        {
+            Destroy(wizardUnits[i]);
+        }
+
+        for(int i = 0; i < blueRallyPoints.Length; i++)
+        {
+            Destroy(blueRallyPoints[i]);
+        }
+
+        for (int i = 0; i < redRallyPoints.Length; i++)
+        {
+            Destroy(redRallyPoints[i]);
+        }
+
+        buildings.Clear();
+    }
+
+
+    public void EndGame(string victoryTeam)
+    {
+        startGame = false;
+        mainMenu = false;
+        endGame = true;
+
+        victorTeam = victoryTeam;
+
+        if(victoryTeam == "Blue Won")
+        {
+            victoryTextBox.text = "Victory \n -Blue Team-";
+        }
+        if(victoryTeam == "Red Won")
+        {
+            victoryTextBox.text = "Victory \n -Red Team-";
+        }
+
+    }
+
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime;
-
-        TotalNumOfResourceCheck();
-
-        if (currentTime >= nextWave)
+        if(startGame == true)
         {
-            //SpawnUnitsAtBuilding
-            nextWave += nextWaveInterval;
+            currentTime += Time.deltaTime;
 
-            //I want this to call the spawn method of all the factory buildings in the game
-            foreach(GameObject gO in Building)
+            TotalNumOfResourceCheck();
+
+            TotalNumOfUnitsInGame();
+
+            TotalNumOfBuildingsInGame();
+
+            if(currentBlueTeamScore >= endScore)
             {
-                if(gO.tag == "Factory Blue" || gO.tag == "Factory Red")
+                EndGame("Blue Won");
+            }
+            if(currentRedTeamScore >= endScore)
+            {
+                EndGame("Red Won");
+            }
+
+            if (currentTime >= nextWave)
+            {
+                //SpawnUnitsAtBuilding
+                nextWave += nextWaveInterval;
+
+                //I want this to call the spawn method of all the factory buildings in the game
+                foreach (GameObject gO in Building)
                 {
-                    gO.GetComponent<Factory_Building_Controller>().SpawnUnitsAtBuilding();
+                    if (gO != null)
+                    {
+                        if (gO.tag == "Factory Blue" || gO.tag == "Factory Red")
+                        {
+                            gO.GetComponent<Factory_Building_Controller>().SpawnUnitsAtBuilding();
+                        }
+                    }
+
                 }
             }
-        }
 
-        if(currentTime >= wizardSpawnCheck)
-        {
-            wizardSpawnCheck += wizardSpawnInterval;
-            SpawnWizardUnits();
+            if (currentTime >= wizardSpawnCheck)
+            {
+                wizardSpawnCheck += wizardSpawnInterval;
+                SpawnWizardUnits();
+            }
         }
+        
 
     }
 
 
     private void SpawnWizardUnits()
     {
-        Instantiate(wizardUnit, wizardSpawnPos.position, Quaternion.identity);
+        Instantiate(wizardUnit, wizardSpawnPos[Random.Range(0, 3)].position, Quaternion.identity);
     }
 
 
@@ -144,6 +314,34 @@ public class Game_Engine : MonoBehaviour
     }
 
 
+    void TotalNumOfBuildingsInGame()
+    {
+        tempFactoryBluebuildings = GameObject.FindGameObjectsWithTag("Factory Blue");
+        tempFactoryRedbuildings = GameObject.FindGameObjectsWithTag("Factory Red");
+        tempResourceBluebuildings = GameObject.FindGameObjectsWithTag("Resource Blue");
+        tempResourceRedbuildings = GameObject.FindGameObjectsWithTag("Resource Red");
+
+        if(tempFactoryBluebuildings == null)
+        {
+            EndGame("Red Won");
+        }
+        if(tempResourceBluebuildings == null)
+        {
+            EndGame("Red Won");
+        }
+        if(tempFactoryRedbuildings == null)
+        {
+            EndGame("Blue Won");
+        }
+        if (tempResourceRedbuildings == null)
+        {
+            EndGame("Blue Won");
+        }
+
+
+    }
+
+
     //Checks for the total num of resource a Team has
     public void TotalNumOfResourceCheck()
     {
@@ -155,32 +353,48 @@ public class Game_Engine : MonoBehaviour
 
         foreach(GameObject gO in Building)
         {
-            if(gO.tag == "Resource Blue" || gO.tag == "Resource Red")
+            if(gO != null)
             {
-                if (gO.GetComponent<Resource_Building_Controller>().Instance == 1)
+                if (gO.tag == "Resource Blue" || gO.tag == "Resource Red")
                 {
-                    blueTemp1 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
-                }
-                if (gO.GetComponent<Resource_Building_Controller>().Instance == 2)
-                {
-                    blueTemp2 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
-                }
+                    if (gO.GetComponent<Resource_Building_Controller>().Instance == 1)
+                    {
+                        blueTemp1 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
+                    }
+                    if (gO.GetComponent<Resource_Building_Controller>().Instance == 2)
+                    {
+                        blueTemp2 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
+                    }
 
-                if (gO.GetComponent<Resource_Building_Controller>().Instance == 3)
-                {
-                    redTemp1 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
-                }
-                if (gO.GetComponent<Resource_Building_Controller>().Instance == 4)
-                {
-                    redTemp2 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
+                    if (gO.GetComponent<Resource_Building_Controller>().Instance == 3)
+                    {
+                        redTemp1 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
+                    }
+                    if (gO.GetComponent<Resource_Building_Controller>().Instance == 4)
+                    {
+                        redTemp2 = gO.GetComponent<Resource_Building_Controller>().currentNumOfResource;
+                    }
                 }
             }
+  
             
         }
 
         numOfBlueResourceTotal = blueTemp1 + blueTemp2;
         numOfRedResourceTotal = redTemp1 + redTemp2;
 
+    }
+
+
+    void TotalNumOfUnitsInGame()
+    {
+        meleeBlueUnit = GameObject.FindGameObjectsWithTag("Melee Unit Blue");
+        rangedBlueUnit = GameObject.FindGameObjectsWithTag("Ranged Unit Blue");
+
+        meleeRedUnit = GameObject.FindGameObjectsWithTag("Melee Unit Red");
+        rangedRedUnit = GameObject.FindGameObjectsWithTag("Ranged Unit Red");
+
+        wizardUnits = GameObject.FindGameObjectsWithTag("Wizard Unit");
     }
 
 

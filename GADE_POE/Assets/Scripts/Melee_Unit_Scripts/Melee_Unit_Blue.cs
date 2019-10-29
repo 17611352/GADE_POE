@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Melee_Unit_Blue : MonoBehaviour
 {
@@ -9,11 +11,14 @@ public class Melee_Unit_Blue : MonoBehaviour
     public GameObject nearestObj;
     Animator anim;
 
+    public Image healthBar;
+
     public int speed = 2;
     public float health;
     int maxHealth = 100;
     float attack = 20;
-    float attackRange = 0.7f;
+    float attackRange = 2f;
+    public float distance = 0;
 
     bool isAttacking = false;
     public bool radiusCheckContact = false;
@@ -37,7 +42,10 @@ public class Melee_Unit_Blue : MonoBehaviour
     {
         DeathCheck();
 
-        if(health < 30)
+        healthBar.fillAmount = health / maxHealth; 
+
+
+        if (health < 30)
         {
             RunAway();
 
@@ -52,6 +60,12 @@ public class Melee_Unit_Blue : MonoBehaviour
             {
                 transform.LookAt(nearestObj.transform, Vector2.up);
 
+                distance = Vector3.Distance(nearestObj.transform.position, this.transform.position);
+
+                if (Vector3.Distance(nearestObj.transform.position, this.transform.position) > attackRange)
+                {
+                    radiusCheckContact = false;
+                }
                 //if (Vector2.Distance(transform.position, nearestObj.transform.position) > attackRange)
                 //{
                 //    transform.Translate(Vector3.forward * speed * Time.deltaTime);
@@ -220,12 +234,23 @@ public class Melee_Unit_Blue : MonoBehaviour
             health -= 20;
 
             Debug.Log("Damaged Blue");
+
+            if(health <= 0 && this.gameObject != null)
+            {
+                gameManager.GetComponent<Game_Engine>().currentRedTeamScore++;
+                DeathCheck();
+            }
         }
         else if (other.gameObject.CompareTag("Red Arrow"))
         {
             health -= 15;
 
             Debug.Log("Damaged Blue Melee Unit With Arrow");
+
+            if (health <= 0 && this.gameObject != null)
+            {
+                gameManager.GetComponent<Game_Engine>().currentRedTeamScore++;
+            }
         }
         else if(other.gameObject.CompareTag("Wizard Projectile"))
         {
