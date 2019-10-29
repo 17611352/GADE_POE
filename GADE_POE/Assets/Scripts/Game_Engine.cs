@@ -321,24 +321,24 @@ public class Game_Engine : MonoBehaviour
         tempResourceBluebuildings = GameObject.FindGameObjectsWithTag("Resource Blue");
         tempResourceRedbuildings = GameObject.FindGameObjectsWithTag("Resource Red");
 
-        if(tempFactoryBluebuildings == null)
+        if (tempFactoryBluebuildings.Length <= 0)
+        {
+            EndGame("Red Won");
+
+            Debug.Log("Check");
+        }
+        if(tempResourceBluebuildings.Length <= 0)
         {
             EndGame("Red Won");
         }
-        if(tempResourceBluebuildings == null)
-        {
-            EndGame("Red Won");
-        }
-        if(tempFactoryRedbuildings == null)
+        if(tempFactoryRedbuildings.Length <= 0)
         {
             EndGame("Blue Won");
         }
-        if (tempResourceRedbuildings == null)
+        if (tempResourceRedbuildings.Length <= 0)
         {
             EndGame("Blue Won");
         }
-
-
     }
 
 
